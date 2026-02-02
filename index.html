@@ -2,59 +2,70 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>S_D_L_S_SYSTEM</title>
+    <title>TRACE_SESSION_LOG</title>
     <style>
         body { background: #000; color: #0f0; font-family: 'Courier New', monospace; margin: 0; overflow: hidden; }
-        canvas { position: fixed; top: 0; left: 0; opacity: 0.3; z-index: 1; }
+        canvas { position: fixed; top: 0; left: 0; opacity: 0.3; z-index: 0; }
         .ui { position: relative; z-index: 10; padding: 5vw; text-align: center; }
         .hidden { display: none; }
-        .warning { color: #ff3333; text-shadow: 0 0 15px #ff3333; font-weight: bold; }
-        #log-console { text-align: left; display: inline-block; font-size: 1.4vw; background: rgba(0,0,0,0.8); padding: 20px; border: 1px solid #0f0; min-width: 500px; }
-        .bar-frame { width: 100%; border: 1px solid #0f0; height: 12px; margin-top: 15px; }
-        #bar-fill { width: 0%; height: 100%; background: #0f0; }
-        /* 権利宣言（トロール証明） */
-        .disclaimer { position: fixed; bottom: 10px; right: 15px; color: #333; font-size: 10px; z-index: 100; pointer-events: none; }
+        .critical { color: red; text-shadow: 0 0 15px red; font-weight: bold; }
+        
+        #log-area { text-align: left; display: inline-block; font-size: 1.5vw; background: rgba(0,0,0,0.8); padding: 20px; border: 1px solid #0f0; min-width: 500px; }
+        
+        .bar-container { width: 100%; border: 1px solid #0f0; height: 15px; margin-top: 15px; background: #002200; }
+        #bar { width: 0%; height: 100%; background: #0f0; }
+        
+        .troll-tag { position: fixed; bottom: 8px; right: 10px; color: #333; font-size: 12px; z-index: 100; }
+
+        /* --- ここから追加：赤くフラッシュする設定 --- */
+        .emergency-bg {
+            animation: flash-red 0.4s infinite;
+        }
+        @keyframes flash-red {
+            0% { background-color: black; }
+            50% { background-color: #400; } /* 暗い赤で絶望感を出す */
+            100% { background-color: black; }
+        }
     </style>
 </head>
 <body>
     <canvas id="m"></canvas>
     <div class="ui">
-        <div id="step1">
-            <p>[STATUS: SCANNING]</p>
-            <h1 id="un" style="font-size: 6vw;">ACCESSING...</h1>
+        <div id="s1">
+            <p>[SYSTEM_BOOT]</p>
+            <h1 id="un" style="font-size: 6vw;">ANALYZING...</h1>
         </div>
 
-        <div id="step2" class="hidden">
-            <div id="log-console">
-                <p>LOGIN_KEY: <span id="pk"></span></p>
-                <p id="st" style="font-weight:bold;"></p>
-                <div id="details">
-                    <p id="l1" class="hidden">> Loc_Data: <span id="l1-r"></span></p>
-                    <p id="l2" class="hidden">> Firewall: <span id="l2-r" style="color:red;"></span></p>
-                    <p id="l3" class="hidden">> Protocol: <span id="l3-r"></span></p>
+        <div id="s2" class="hidden">
+            <div id="log-area">
+                <p>LOGIN_KEY: <span id="pass"></span></p>
+                <p id="st"></p>
+                <div id="logs">
+                    <p id="l1" class="hidden">> Location: <span id="l1-r"></span></p>
+                    <p id="l2" class="hidden">> Status: <span id="l2-r" style="color:red;"></span></p>
                     <div id="l4" class="hidden" style="margin-top:20px;">
-                        <p>> STREAMING_COORDINATES:</p>
-                        <div class="bar-frame"><div id="bar-fill"></div></div>
+                        <p>> FINAL_TRACE_STREAMING:</p>
+                        <div class="bar-container"><div id="bar"></div></div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div id="step3" class="hidden">
-            <h1 class="warning" style="font-size: 4vw;">LOCATION_FIXED:</h1>
+        <div id="s3" class="hidden">
+            <h1 class="critical" style="font-size: 4vw;">LOCATION_FIXED:</h1>
             <h1 style="font-size: 8vw; margin:0; letter-spacing: -2px;">Kita, Akabane</h1>
-            <p style="color:#fff; font-size: 1.2vw; margin-top:20px;">[!] DATABASE_SYNC_SUCCESSFUL</p>
+            <p style="color:white; font-size: 1.2vw; margin-top:20px;">[!] COORDINATES_SENT_TO_REMOTE_SERVER</p>
         </div>
     </div>
-    <div class="disclaimer">THIS IS A TROLL. NO DATA COLLECTED.</div>
+    <div class="troll-tag">THIS IS A TROLL</div>
 
     <script>
-        // 背景デジタルレイン
+        // 背景エフェクト（省略せず記述）
         const c = document.getElementById('m'); const x = c.getContext('2d');
         c.width = window.innerWidth; c.height = window.innerHeight;
         const drops = Array(Math.floor(c.width/15)).fill(1);
         function draw() {
-            x.fillStyle = "rgba(0,0,0,0.1)"; x.fillRect(0,0,c.width,c.height);
+            x.fillStyle = "rgba(0,0,0,0.08)"; x.fillRect(0,0,c.width,c.height);
             x.fillStyle = "#0a0"; x.font = "15px monospace";
             drops.forEach((y, i) => {
                 x.fillText(Math.floor(Math.random()*2), i*15, y*15);
@@ -64,52 +75,44 @@
         }
         setInterval(draw, 50);
 
-        // トロールロジック
-        const urlParams = new URLSearchParams(window.location.search);
-        document.getElementById('un').innerText = urlParams.get('name') || "Target_User";
+        const name = new URLSearchParams(window.location.search).get('name') || "Target";
+        document.getElementById('un').innerText = name;
 
         setTimeout(() => {
-            document.getElementById('step1').classList.add('hidden');
-            document.getElementById('step2').classList.remove('hidden');
+            document.getElementById('s1').classList.add('hidden');
+            document.getElementById('s2').classList.remove('hidden');
             
-            // パスワード擬似入力
-            let i = 0; const pass = "************";
+            let i = 0; const pt = "************";
             const typing = setInterval(() => {
-                document.getElementById('pk').innerText += pass[i++];
-                if (i >= pass.length) {
+                document.getElementById('pass').innerText += pt[i++];
+                if (i >= pt.length) {
                     clearInterval(typing);
                     setTimeout(() => {
-                        const st = document.getElementById('st');
-                        st.innerText = "VERIFIED!"; st.style.color = "cyan";
+                        document.getElementById('st').innerText = "VERIFIED!"; document.getElementById('st').style.color = "cyan";
                         
-                        const show = (id, resId, text, delay) => {
-                            setTimeout(() => {
-                                document.getElementById(id).classList.remove('hidden');
-                                if(resId) setTimeout(() => document.getElementById(resId).innerText = text, 600);
-                            }, delay);
-                        };
-
-                        show('l1', 'l1-r', 'Detected', 800);
-                        show('l2', 'l2-r', 'Access Denied', 2000); 
-                        show('l3', 'l3-r', 'Bypassing...', 3800); 
-
-                        // 最終ロードバー
+                        setTimeout(() => { document.getElementById('l1').classList.remove('hidden'); document.getElementById('l1-r').innerText = "Detected"; }, 800);
+                        setTimeout(() => { document.getElementById('l2').classList.remove('hidden'); document.getElementById('l2-r').innerText = "Access Denied"; }, 1800);
+                        
+                        // ロードバー開始
                         setTimeout(() => {
                             document.getElementById('l4').classList.remove('hidden');
                             let w = 0;
-                            const b = document.getElementById('bar-fill');
+                            const b = document.getElementById('bar');
                             const iv = setInterval(() => {
-                                w += Math.random() * 3;
+                                w += Math.random() * 5;
                                 if (w >= 100) {
                                     w = 100; clearInterval(iv);
                                     setTimeout(() => {
-                                        document.getElementById('step2').classList.add('hidden');
-                                        document.getElementById('step3').classList.remove('hidden');
+                                        document.getElementById('s2').classList.add('hidden');
+                                        document.getElementById('s3').classList.remove('hidden');
+                                        
+                                        // --- ここでフラッシュ発動！ ---
+                                        document.body.classList.add('emergency-bg');
                                     }, 800);
                                 }
                                 b.style.width = w + "%";
-                            }, 50);
-                        }, 5000);
+                            }, 60);
+                        }, 3000);
                     }, 800);
                 }
             }, 150);
