@@ -2,91 +2,94 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>SYSTEM_ROOT_LOG</title>
+    <title>TRACE_COMPLETE</title>
     <style>
         body { background: black; color: #0f0; font-family: 'Courier New', monospace; margin: 0; overflow: hidden; }
         canvas { position: fixed; top: 0; left: 0; z-index: 0; opacity: 0.3; }
         .ui { position: relative; z-index: 10; padding: 5vw; text-align: center; }
         .hidden { display: none; }
         .red { color: red; text-shadow: 0 0 15px red; }
-        #log-container { text-align: left; display: inline-block; font-size: 1.5vw; background: rgba(0,0,0,0.8); padding: 20px; border: 1px solid #0f0; }
-        .troll-tag { position: fixed; bottom: 10px; right: 15px; color: #444; font-size: 12px; z-index: 100; }
+        #log-area { text-align: left; display: inline-block; font-size: 1.5vw; background: rgba(0,0,0,0.8); padding: 20px; border: 1px solid #0f0; min-width: 400px; }
+        .troll-tag { position: fixed; bottom: 8px; right: 8px; color: #333; font-size: 11px; z-index: 100; opacity: 0.7; }
     </style>
 </head>
 <body>
     <canvas id="m"></canvas>
     <div class="ui">
         <div id="s1">
-            <p>CONNECTING...</p>
-            <h1 id="un" style="font-size: 6vw;">ACCESSING...</h1>
+            <p>[SYSTEM_BOOT]</p>
+            <h1 id="un" style="font-size: 6vw;">ANALYZING...</h1>
         </div>
         <div id="s2" class="hidden">
-            <div id="log-container">
-                <p>SUDO PRIVILEGE: <span id="pass"></span></p>
-                <p id="st"></p>
-                <p id="l1" class="hidden">Detecting Location Data...</p>
-                <p id="l2" class="hidden">Completed!</p>
-                <p id="l3" class="hidden" style="color:yellow;">Checking blockers...</p>
-                <p id="l4" class="hidden" style="color:red;">Access Denied</p>
-                <p id="l5" class="hidden">Attempting bypass...</p>
-                <p id="l6" class="hidden" style="color:cyan;">Access Completed!</p>
+            <div id="log-area">
+                <p>LOGIN: <span id="pass"></span></p>
+                <p id="st" style="font-weight:bold;"></p>
+                <p id="l1" class="hidden">> Searching Location...</p>
+                <p id="l2" class="hidden">> Data_Found: 100%</p>
+                <p id="l3" class="hidden" style="color:yellow;">> Bypassing Firewall...</p>
+                <p id="l4" class="hidden" style="color:red;">> Signal_Lost... Retrying...</p>
+                <p id="l5" class="hidden">> Injecting_Protocol...</p>
+                <p id="l6" class="hidden" style="color:cyan;">> Target_Locked!</p>
             </div>
         </div>
         <div id="s3" class="hidden">
-            <h1 class="red" style="font-size: 3vw;">LOCATION_FIXED:</h1>
-            <h1 style="font-size: 8vw; margin:0;">Kita, Akabane</h1>
-            <p style="color:white;">ENCRYPTING_AND_UPLOADING...</p>
+            <h1 class="red" style="font-size: 4vw;">LOCATION_DETECTED:</h1>
+            <h1 style="font-size: 8vw; margin:0; letter-spacing: -2px;">Kita, Akabane</h1>
+            <p style="color:white; font-size: 1.2vw; margin-top:20px;">[!] COORDINATES_SENT_TO_DATABASE</p>
         </div>
     </div>
     <div class="troll-tag">THIS IS A TROLL</div>
 
     <script>
-        // 背景エフェクト
+        // 背景の数字の雨
         const c = document.getElementById('m'); const x = c.getContext('2d');
         c.width = window.innerWidth; c.height = window.innerHeight;
-        const drops = Array(Math.floor(c.width/14)).fill(1);
+        const drops = Array(Math.floor(c.width/15)).fill(1);
         function draw() {
-            x.fillStyle = "rgba(0,0,0,0.05)"; x.fillRect(0,0,c.width,c.height);
-            x.fillStyle = "#0f0"; x.font = "14px monospace";
+            x.fillStyle = "rgba(0,0,0,0.08)"; x.fillRect(0,0,c.width,c.height);
+            x.fillStyle = "#0a0"; x.font = "15px monospace";
             drops.forEach((y, i) => {
-                x.fillText(Math.floor(Math.random()*2), i*14, y*14);
-                if (y*14 > c.height && Math.random() > 0.975) drops[i] = 0;
+                x.fillText(Math.floor(Math.random()*2), i*15, y*15);
+                if (y*15 > c.height && Math.random() > 0.98) drops[i] = 0;
                 drops[i]++;
             });
         }
         setInterval(draw, 50);
 
-        // 演出ロジック
-        const n = new URLSearchParams(window.location.search).get('name') || "Target";
-        document.getElementById('un').innerText = n;
+        // 演出制御
+        const name = new URLSearchParams(window.location.search).get('name') || "Target_User";
+        document.getElementById('un').innerText = name;
 
         setTimeout(() => {
             document.getElementById('s1').classList.add('hidden');
             document.getElementById('s2').classList.remove('hidden');
             
-            // パスワード自動入力
+            // パスワード入力演出
             let p = 0; const pt = "************";
             const t = setInterval(() => {
                 document.getElementById('pass').innerText += pt[p++];
                 if (p >= pt.length) {
                     clearInterval(t);
-                    document.getElementById('st').innerText = "VERIFIED!";
-                    
-                    // あなたが希望した追加ロード演出
-                    const show = (id, d) => setTimeout(() => document.getElementById(id).classList.remove('hidden'), d);
-                    show('l1', 800);  // Detecting...
-                    show('l2', 1500); // Completed!
-                    show('l3', 2200); // Checking blockers...
-                    show('l4', 3500); // Access Denied (タメ)
-                    show('l5', 4200); // Attempting bypass...
-                    show('l6', 5500); // Access Completed!
-
                     setTimeout(() => {
-                        document.getElementById('s2').classList.add('hidden');
-                        document.getElementById('s3').classList.remove('hidden');
-                    }, 6500);
+                        document.getElementById('st').innerText = "ACCESS_GRANTED";
+                        document.getElementById('st').style.color = "cyan";
+                        
+                        // 住所特定までの長いロード演出
+                        const show = (id, d) => setTimeout(() => document.getElementById(id).classList.remove('hidden'), d);
+                        show('l1', 1000); // 検索
+                        show('l2', 1800); // 発見
+                        show('l3', 2800); // バイパス中
+                        show('l4', 4500); // 失敗・リトライ（ここでドキッとさせる）
+                        show('l5', 5500); // 再試行
+                        show('l6', 7000); // 完了（トータル7秒のタメ）
+
+                        setTimeout(() => {
+                            document.getElementById('s2').classList.add('hidden');
+                            document.getElementById('s3').classList.remove('hidden');
+                        }, 8200);
+                    }, 800);
                 }
-            }, 150);
+            }, 180);
         }, 2000);
     </script>
 </body>
