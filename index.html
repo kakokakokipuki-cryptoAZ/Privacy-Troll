@@ -2,68 +2,63 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>CRITICAL_SECURITY_ALERT</title>
+    <title>Visual Effect Example</title>
     <style>
-        body { background: black; color: #0f0; font-family: 'Courier New', monospace; padding: 5vw; overflow: hidden; }
-        .hidden { display: none; }
-        
-        /* 名前と住所を巨大化 */
-        #user-name, #location-text { font-size: 8vw; color: red; text-shadow: 0 0 20px red; margin: 0; }
-        #loading { font-size: 3vw; color: #0f0; }
+        body { background: black; color: #0f0; font-family: 'Courier New', monospace; margin: 0; overflow: hidden; }
 
-        /* 「THIS IS A TROLL」を極小に */
-        .troll-tag { 
-            position: fixed; 
-            bottom: 5px; 
-            right: 5px; 
-            color: #1a1a1a; /* 背景に馴染むくらいの暗い色 */
-            font-size: 8px; /* 豆粒サイズ */
-            text-decoration: none;
-        }
+        /* 背景用のキャンバス */
+        #effectCanvas { position: fixed; top: 0; left: 0; z-index: -1; opacity: 0.5; }
+
+        /* コンテンツ表示エリア */
+        .content { position: relative; z-index: 1; padding: 5vw; text-align: center; }
+
+        h1 { font-size: 8vw; color: #00ffff; text-shadow: 0 0 20px cyan; margin: 0; }
+        p { font-size: 3vw; color: #0f0; }
     </style>
 </head>
 <body>
 
-    <div id="step1">
-        <p style="font-size: 2vw;">TARGET_USER_FOUND:</p>
-        <h1 id="user-name">Scanning...</h1>
-    </div>
+    <canvas id="effectCanvas"></canvas>
 
-    <div id="step2" class="hidden">
-        <p id="loading">DECRYPTING_PRIVATE_DATA... [..........] 0%</p>
+    <div class="content">
+        <h1>Welcome</h1>
+        <p>This is an example of a web page with a background visual effect.</p>
     </div>
-
-    <div id="step3" class="hidden">
-        <p style="font-size: 2vw; color: red;">LOCATION_FIXED:</p>
-        <h1 id="location-text">Kita, Akabane</h1>
-        <p style="font-size: 1.5vw;">ACCESS_POINT: REMOTE_SERVER_NODE_09</p>
-    </div>
-
-    <!-- 極小のネタばらし -->
-    <div class="troll-tag">THIS IS A TROLL</div>
 
     <script>
-        const params = new URLSearchParams(window.location.search);
-        const name = params.get('name') || "Target";
-        document.getElementById('user-name').innerText = name;
+        // 背景エフェクト
+        const canvas = document.getElementById('effectCanvas');
+        const ctx = canvas.getContext('2d');
+        canvas.height = window.innerHeight;
+        canvas.width = window.innerWidth;
+        const chars = "CHASISJD`@WJDS'sdf1jsiad293"; // 表示する文字
+        const fontSize = 16;
+        const columns = canvas.width / fontSize;
+        const drops = Array(Math.floor(columns)).fill(1); // 各列の文字のy座標
 
-        setTimeout(() => {
-            document.getElementById('step1').classList.add('hidden');
-            document.getElementById('step2').classList.remove('hidden');
-            
-            let progress = 0;
-            const loader = setInterval(() => {
-                progress += 10;
-                document.getElementById('loading').innerText = `DECRYPTING... [${'#'.repeat(progress/10)}${'.'.repeat(10-progress/10)}] ${progress}%`;
-                if (progress >= 100) {
-                    clearInterval(loader);
-                    setTimeout(() => {
-                        document.getElementById('step2').classList.add('hidden');
-                        document.getElementById('step3').classList.remove('hidden');
-                    }, 500);
+        function drawEffect() {
+            ctx.fillStyle = "rgba(0, 0, 0, 0.05)"; // 残像効果のための半透明な黒で塗りつぶす
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "#0f0"; // 文字の色 (緑)
+            ctx.font = fontSize + "px monospace";
+
+            for (let i = 0; i < drops.length; i++) {
+                // ランダムな文字を選択
+                const text = chars[Math.floor(Math.random() * chars.length)];
+                // 文字を描画
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+                // もし文字が画面の一番下に到達したら、新しい位置をリセットする
+                // ランダムにリセットすることで、雨のように見える
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
                 }
-            }, 300);
-        }, 1500);
+                // 次のフレームで文字を下へ移動させる
+                drops[i]++;
+            }
+        }
+        // 一定間隔で描画関数を呼び出す
+        setInterval(drawEffect, 50);
     </script>
 </body>
 </html>
