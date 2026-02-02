@@ -2,100 +2,101 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>TERMINAL_SESSION</title>
+    <title>SYSTEM_ROOT_LOG</title>
     <style>
-        body { background: #000; color: #0f0; font-family: 'Courier New', monospace; margin: 0; overflow: hidden; }
-        canvas { position: fixed; top: 0; left: 0; opacity: 0.3; z-index: 1; }
-        .ui { position: relative; z-index: 10; padding: 50px; text-align: center; }
+        body { background: black; color: #0f0; font-family: 'Courier New', monospace; margin: 0; overflow: hidden; }
+        canvas { position: fixed; top: 0; left: 0; z-index: 0; opacity: 0.3; }
+        .ui { position: relative; z-index: 10; padding: 5vw; text-align: center; }
         .hidden { display: none; }
-        .critical { color: #ff0000; text-shadow: 0 0 15px #ff0000; }
-        #log-box { text-align: left; display: inline-block; font-size: 1.2rem; background: rgba(0,0,0,0.8); padding: 20px; border: 1px solid #0f0; min-width: 450px; }
-        .troll { position: fixed; bottom: 10px; right: 15px; color: #222; font-size: 12px; z-index: 100; }
+        .red { color: red; text-shadow: 0 0 15px red; font-weight: bold; }
+        #log-area { text-align: left; display: inline-block; font-size: 1.5vw; background: rgba(0,0,0,0.8); padding: 20px; border: 1px solid #0f0; min-width: 500px; }
+        .troll-tag { position: fixed; bottom: 10px; right: 15px; color: #333; font-size: 14px; z-index: 100; font-weight: bold; }
     </style>
 </head>
 <body>
-    <canvas id="m"></canvas>
+    <canvas id="matrix"></canvas>
     <div class="ui">
-        <div id="s1">
-            <p>[INITIATING_SCAN]</p>
-            <h1 id="un" style="font-size: 5vw;">SEARCHING...</h1>
+        <div id="step1">
+            <p>[STATUS: SEARCHING_TARGET]</p>
+            <h1 id="user-name" style="font-size: 7vw;">ACCESSING...</h1>
         </div>
 
-        <div id="s2" class="hidden">
-            <div id="log-box">
-                <p>ADMIN_KEY: <span id="pk"></span></p>
-                <p id="auth" style="font-weight:bold;"></p>
+        <div id="step2" class="hidden">
+            <div id="log-area">
+                <p>SUDO_LOGIN: <span id="fake-pass"></span></p>
+                <p id="auth-status" style="font-weight:bold;"></p>
                 <div id="extra-logs">
-                    <p id="l1" class="hidden">> Detecting Location Data...</p>
-                    <p id="l2" class="hidden">> Completed!</p>
-                    <p id="l3" class="hidden" style="color:yellow;">> Checking blockers...</p>
-                    <p id="l4" class="hidden" style="color:red;">> Access Denied. Retrying...</p>
-                    <p id="l5" class="hidden">> Attempting bypass...</p>
-                    <p id="l6" class="hidden" style="color:cyan;">> Access Completed!</p>
+                    <p id="l1" class="hidden">Detecting Location Data... <span id="l1-res"></span></p>
+                    <p id="l2" class="hidden">Checking blockers... <span id="l2-res" style="color:red;"></span></p>
+                    <p id="l3" class="hidden">Attempting bypass... <span id="l3-res"></span></p>
                 </div>
             </div>
         </div>
 
-        <div id="s3" class="hidden">
-            <h1 class="critical" style="font-size: 4vw;">LOCATION_FIXED:</h1>
-            <h1 style="font-size: 8vw; margin:0;">Kita, Akabane</h1>
-            <p style="color:#fff; font-size: 1.2vw; margin-top:20px;">[!] COORDINATES_LOGGED_TO_NETWORK</p>
+        <div id="step3" class="hidden">
+            <h1 class="red" style="font-size: 4vw;">LOCATION_FIXED:</h1>
+            <h1 style="font-size: 9vw; margin:0; letter-spacing: -2px;">Kita, Akabane</h1>
+            <p style="color:white; font-size: 1.5vw; margin-top:20px;">[!] DATABASE_UPDATE_SUCCESSFUL</p>
         </div>
     </div>
-    <div class="troll">THIS IS A TROLL</div>
+
+    <!-- ジョークであることの明示 -->
+    <div class="troll-tag">THIS IS A TROLL / ジョークサイトです</div>
 
     <script>
-        // 背景のデジタルレイン
-        const c = document.getElementById('m'); const x = c.getContext('2d');
-        c.width = window.innerWidth; c.height = window.innerHeight;
-        const drops = Array(Math.floor(c.width/15)).fill(1);
+        // 背景エフェクト
+        const canvas = document.getElementById('matrix'); const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+        const drops = Array(Math.floor(canvas.width/15)).fill(1);
         function draw() {
-            x.fillStyle = "rgba(0,0,0,0.08)"; x.fillRect(0,0,c.width,c.height);
-            x.fillStyle = "#0f0"; x.font = "15px monospace";
+            ctx.fillStyle = "rgba(0,0,0,0.08)"; ctx.fillRect(0,0,canvas.width,canvas.height);
+            ctx.fillStyle = "#0f0"; ctx.font = "15px monospace";
             drops.forEach((y, i) => {
-                x.fillText(Math.floor(Math.random()*2), i*15, y*15);
-                if (y*15 > c.height && Math.random() > 0.98) drops[i] = 0;
+                ctx.fillText(Math.floor(Math.random()*2), i*15, y*15);
+                if (y*15 > canvas.height && Math.random() > 0.98) drops[i] = 0;
                 drops[i]++;
             });
         }
         setInterval(draw, 50);
 
-        // 演出シーケンス
-        const urlParams = new URLSearchParams(window.location.search);
-        document.getElementById('un').innerText = urlParams.get('name') || "Target_User";
+        // トロール演出ロジック
+        const name = new URLSearchParams(window.location.search).get('name') || "Target_User";
+        document.getElementById('user-name').innerText = name;
 
         setTimeout(() => {
-            document.getElementById('s1').classList.add('hidden');
-            document.getElementById('s2').classList.remove('hidden');
+            document.getElementById('step1').classList.add('hidden');
+            document.getElementById('step2').classList.remove('hidden');
             
-            // 偽のパスワード入力
-            let i = 0; const pass = "************";
-            const typing = setInterval(() => {
-                document.getElementById('pk').innerText += pass[i++];
-                if (i >= pass.length) {
-                    clearInterval(typing);
+            // パスワード自動入力
+            let p = 0; const pt = "************";
+            const t = setInterval(() => {
+                document.getElementById('fake-pass').innerText += pt[p++];
+                if (p >= pt.length) {
+                    clearInterval(t);
                     setTimeout(() => {
-                        const auth = document.getElementById('auth');
-                        auth.innerText = "VERIFIED!";
-                        auth.style.color = "cyan";
+                        document.getElementById('auth-status').innerText = "VERIFIED!";
+                        document.getElementById('auth-status').style.color = "cyan";
                         
-                        // 追加された長いロード演出
-                        const show = (id, ms) => setTimeout(() => document.getElementById(id).classList.remove('hidden'), ms);
-                        show('l1', 1000); 
-                        show('l2', 1800); 
-                        show('l3', 2800); 
-                        show('l4', 4200); // Access Denied (タメ)
-                        show('l5', 5200); 
-                        show('l6', 6500); // 完了
+                        // あなたが希望した詳細ロード演出
+                        const log = (id, resId, resText, delay) => {
+                            setTimeout(() => {
+                                document.getElementById(id).classList.remove('hidden');
+                                if(resId) setTimeout(() => document.getElementById(resId).innerText = resText, 800);
+                            }, delay);
+                        };
+
+                        log('l1', 'l1-res', 'Completed!', 1000);
+                        log('l2', 'l2-res', 'Access Denied', 2500); // 絶望タイム
+                        log('l3', 'l3-res', 'Access Completed!', 4500); // 強制突破
 
                         setTimeout(() => {
-                            document.getElementById('s2').classList.add('hidden');
-                            document.getElementById('s3').classList.remove('hidden');
-                        }, 7800);
+                            document.getElementById('step2').classList.add('hidden');
+                            document.getElementById('step3').classList.remove('hidden');
+                        }, 6500);
                     }, 800);
                 }
             }, 150);
-        }, 2000);
+        }, 2500);
     </script>
 </body>
 </html>
