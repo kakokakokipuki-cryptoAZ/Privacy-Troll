@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>SYSTEM_FAILURE_DETECTION</title>
+    <style>
+        body { background: black; color: #0f0; font-family: 'Courier New', Courier, monospace; padding: 50px; overflow: hidden; }
+        .hidden { display: none; }
+        #loading { font-size: 1.5em; }
+        .troll-tag { position: fixed; bottom: 10px; right: 10px; color: #333; font-size: 12px; }
+    </style>
+</head>
+<body>
+
+    <div id="step1">
+        <p>IDENTIFYING TARGET...</p>
+        <h1 id="user-name">Unknown</h1>
+    </div>
+
+    <div id="step2" class="hidden">
+        <p id="loading">UPDATING DATABASE [..........] 0%</p>
+    </div>
+
+    <div id="step3" class="hidden">
+        <h2 style="color: red;">LOCATION DETECTED:</h2>
+        <h1 style="font-size: 3em;">Kita, Akabane</h1>
+        <p>IP Address: 192.168.1.XXX (Mock)</p>
+    </div>
+
+    <div class="troll-tag">THIS IS A TROLL</div>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const name = params.get('name') || "Target User";
+        document.getElementById('user-name').innerText = name;
+
+        // 演出のタイムライン
+        setTimeout(() => {
+            document.getElementById('step1').classList.add('hidden');
+            document.getElementById('step2').classList.remove('hidden');
+            
+            // ロード画面のアニメーション
+            let progress = 0;
+            const loader = setInterval(() => {
+                progress += 20;
+                document.getElementById('loading').innerText = `UPDATING DATABASE [${'#'.repeat(progress/10)}${'.'.repeat(10-progress/10)}] ${progress}%`;
+                if (progress >= 100) {
+                    clearInterval(loader);
+                    // 最終ステップ
+                    setTimeout(() => {
+                        document.getElementById('step2').classList.add('hidden');
+                        document.getElementById('step3').classList.remove('hidden');
+                    }, 500);
+                }
+            }, 400);
+        }, 2000);
+    </script>
+</body>
+</html>
