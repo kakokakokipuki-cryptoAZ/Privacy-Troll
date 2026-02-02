@@ -2,41 +2,25 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>System Alert</title>
+    <title>System Alert Simulation</title>
     <style>
-        body {
-            background-color: black;
-            color: red;
-            font-family: 'Courier New', monospace;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            overflow: hidden;
-        }
-        .alert-box {
-            border: 2px solid red;
-            padding: 20px;
-            text-align: center;
-            box-shadow: 0 0 20px red;
-        }
-        h1 {
-            font-size: 3em;
-            margin: 0;
-            animation: pulse 1s infinite;
-        }
-        @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.5; }
-            100% { opacity: 1; }
-        }
+        body { background: black; color: #0f0; font-family: 'Courier New', monospace; margin: 20px; }
+        .alert-box { border: 1px solid #0f0; padding: 20px; display: inline-block; background: rgba(0,0,0,0.8); }
+        .message { margin: 5px 0; }
     </style>
 </head>
 <body>
     <div class="alert-box">
-        <h1>SYSTEM ALERT</h1>
-        <p>This is a simulated critical system alert.</p>
+        <div class="message">[STATUS] System Check Initiated...</div>
+        <div class="message">[INFO] All systems nominal.</div>
+        <div class="message">[ALERT] Database connection stable.</div>
+        <div class="message">[SUCCESS] Operation completed.</div>
     </div>
+
+    <script>
+        // ここに必要に応じてJavaScriptを追加して、
+        // メッセージを動的に表示するなどの演出を加えることができます。
+        // 例：setTimeout(() => { document.querySelector('.message:nth-child(2)').style.color = 'yellow'; }, 1000);
+    </script>
 </body>
 </html>
