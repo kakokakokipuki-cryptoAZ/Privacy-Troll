@@ -2,46 +2,53 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>SYSTEM_ROOT_LOG</title>
+    <title>ROOT_LOG_SESSION</title>
     <style>
-        body { background: black; color: #0f0; font-family: 'Courier New', monospace; margin: 0; overflow: hidden; }
-        canvas { position: fixed; top: 0; left: 0; z-index: 0; opacity: 0.3; }
+        body { background: #000; color: #0f0; font-family: 'Courier New', monospace; margin: 0; overflow: hidden; }
+        canvas { position: fixed; top: 0; left: 0; opacity: 0.3; z-index: 0; }
         .ui { position: relative; z-index: 10; padding: 5vw; text-align: center; }
         .hidden { display: none; }
         .red { color: red; text-shadow: 0 0 15px red; font-weight: bold; }
         #log-area { text-align: left; display: inline-block; font-size: 1.5vw; background: rgba(0,0,0,0.8); padding: 20px; border: 1px solid #0f0; min-width: 500px; }
-        .troll-tag { position: fixed; bottom: 10px; right: 15px; color: #333; font-size: 14px; z-index: 100; font-weight: bold; }
+        
+        /* 恐怖のロードバー */
+        .progress-container { width: 100%; border: 1px solid #0f0; height: 20px; margin-top: 15px; }
+        .progress-bar { width: 0%; height: 100%; background: #0f0; transition: width 0.1s; }
+        
+        .troll-tag { position: fixed; bottom: 10px; right: 15px; color: #444; font-size: 12px; z-index: 100; }
     </style>
 </head>
 <body>
     <canvas id="matrix"></canvas>
     <div class="ui">
         <div id="step1">
-            <p>[STATUS: SEARCHING_TARGET]</p>
-            <h1 id="user-name" style="font-size: 7vw;">ACCESSING...</h1>
+            <p>[SYSTEM_BOOT]</p>
+            <h1 id="user-name" style="font-size: 6vw;">ANALYZING...</h1>
         </div>
 
         <div id="step2" class="hidden">
             <div id="log-area">
-                <p>SUDO_LOGIN: <span id="fake-pass"></span></p>
+                <p>LOGIN_KEY: <span id="fake-pass"></span></p>
                 <p id="auth-status" style="font-weight:bold;"></p>
                 <div id="extra-logs">
-                    <p id="l1" class="hidden">Detecting Location Data... <span id="l1-res"></span></p>
-                    <p id="l2" class="hidden">Checking blockers... <span id="l2-res" style="color:red;"></span></p>
-                    <p id="l3" class="hidden">Attempting bypass... <span id="l3-res"></span></p>
+                    <p id="l1" class="hidden">> Detecting Location... <span id="l1-res"></span></p>
+                    <p id="l2" class="hidden">> Checking blockers... <span id="l2-res" style="color:red;"></span></p>
+                    <p id="l3" class="hidden">> Attempting bypass... <span id="l3-res"></span></p>
+                    <div id="l4" class="hidden">
+                        <p style="margin-bottom:5px;">> FINALIZING_DATA_STREAM:</p>
+                        <div class="progress-container"><div id="bar" class="progress-bar"></div></div>
+                    </div>
                 </div>
             </div>
         </div>
 
         <div id="step3" class="hidden">
             <h1 class="red" style="font-size: 4vw;">LOCATION_FIXED:</h1>
-            <h1 style="font-size: 9vw; margin:0; letter-spacing: -2px;">Kita, Akabane</h1>
-            <p style="color:white; font-size: 1.5vw; margin-top:20px;">[!] DATABASE_UPDATE_SUCCESSFUL</p>
+            <h1 style="font-size: 8vw; margin:0; letter-spacing: -2px;">Kita, Akabane</h1>
+            <p style="color:white; font-size: 1.2vw; margin-top:20px;">[!] DATABASE_SYNC_COMPLETE</p>
         </div>
     </div>
-
-    <!-- ジョークであることの明示 -->
-    <div class="troll-tag">THIS IS A TROLL / ジョークサイトです</div>
+    <div class="troll-tag">THIS IS A TROLL</div>
 
     <script>
         // 背景エフェクト
@@ -59,44 +66,55 @@
         }
         setInterval(draw, 50);
 
-        // トロール演出ロジック
-        const name = new URLSearchParams(window.location.search).get('name') || "Target_User";
+        // トロール演出
+        const name = new URLSearchParams(window.location.search).get('name') || "Target";
         document.getElementById('user-name').innerText = name;
 
         setTimeout(() => {
             document.getElementById('step1').classList.add('hidden');
             document.getElementById('step2').classList.remove('hidden');
             
-            // パスワード自動入力
             let p = 0; const pt = "************";
             const t = setInterval(() => {
                 document.getElementById('fake-pass').innerText += pt[p++];
                 if (p >= pt.length) {
                     clearInterval(t);
                     setTimeout(() => {
-                        document.getElementById('auth-status').innerText = "VERIFIED!";
-                        document.getElementById('auth-status').style.color = "cyan";
+                        const st = document.getElementById('auth-status');
+                        st.innerText = "VERIFIED!"; st.style.color = "cyan";
                         
-                        // あなたが希望した詳細ロード演出
-                        const log = (id, resId, resText, delay) => {
+                        const show = (id, resId, resText, delay) => {
                             setTimeout(() => {
                                 document.getElementById(id).classList.remove('hidden');
-                                if(resId) setTimeout(() => document.getElementById(resId).innerText = resText, 800);
+                                if(resId) setTimeout(() => document.getElementById(resId).innerText = resText, 600);
                             }, delay);
                         };
 
-                        log('l1', 'l1-res', 'Completed!', 1000);
-                        log('l2', 'l2-res', 'Access Denied', 2500); // 絶望タイム
-                        log('l3', 'l3-res', 'Access Completed!', 4500); // 強制突破
+                        show('l1', 'l1-res', 'Completed!', 800);
+                        show('l2', 'l2-res', 'Access Denied', 2000); 
+                        show('l3', 'l3-res', 'Access Completed!', 3500); 
 
+                        // 最終ロードバーの演出
                         setTimeout(() => {
-                            document.getElementById('step2').classList.add('hidden');
-                            document.getElementById('step3').classList.remove('hidden');
-                        }, 6500);
+                            document.getElementById('l4').classList.remove('hidden');
+                            let width = 0;
+                            const bar = document.getElementById('bar');
+                            const progress = setInterval(() => {
+                                width += Math.random() * 3; // 不規則に増やすのがリアル
+                                if (width >= 100) {
+                                    width = 100; clearInterval(progress);
+                                    setTimeout(() => {
+                                        document.getElementById('step2').classList.add('hidden');
+                                        document.getElementById('step3').classList.remove('hidden');
+                                    }, 800);
+                                }
+                                bar.style.width = width + "%";
+                            }, 50);
+                        }, 4800);
                     }, 800);
                 }
             }, 150);
-        }, 2500);
+        }, 2000);
     </script>
 </body>
 </html>
