@@ -2,63 +2,93 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>Visual Effect Example</title>
+    <title>SYSTEM_ROOT_ACCESS</title>
     <style>
         body { background: black; color: #0f0; font-family: 'Courier New', monospace; margin: 0; overflow: hidden; }
+        canvas { position: fixed; top: 0; left: 0; z-index: 0; opacity: 0.3; }
+        .main-ui { position: relative; z-index: 10; padding: 5vw; text-align: center; }
+        .hidden { display: none; }
+        .red { color: red; text-shadow: 0 0 15px red; }
+        h1 { font-size: 6vw; }
+        
+        /* パスワード入力風 */
+        #password-box { border: 1px solid #0f0; padding: 20px; display: inline-block; background: rgba(0,0,0,0.8); }
+        .cursor { display: inline-block; width: 10px; height: 20px; background: #0f0; animation: blink 1s infinite; }
+        @keyframes blink { 50% { opacity: 0; } }
 
-        /* 背景用のキャンバス */
-        #effectCanvas { position: fixed; top: 0; left: 0; z-index: -1; opacity: 0.5; }
-
-        /* コンテンツ表示エリア */
-        .content { position: relative; z-index: 1; padding: 5vw; text-align: center; }
-
-        h1 { font-size: 8vw; color: #00ffff; text-shadow: 0 0 20px cyan; margin: 0; }
-        p { font-size: 3vw; color: #0f0; }
+        .troll-tag { position: fixed; bottom: 10px; right: 15px; color: #444; font-size: 12px; z-index: 100; }
     </style>
 </head>
 <body>
-
-    <canvas id="effectCanvas"></canvas>
-
-    <div class="content">
-        <h1>Welcome</h1>
-        <p>This is an example of a web page with a background visual effect.</p>
+    <canvas id="matrix"></canvas>
+    <div class="main-ui">
+        <div id="step1">
+            <p>TARGETING...</p>
+            <h1 id="user-name">ACCESSING...</h1>
+        </div>
+        <div id="step2" class="hidden">
+            <div id="password-box">
+                <p>SUDO PRIVILEGE REQUIRED:</p>
+                <p>PASSWORD: <span id="fake-pass"></span><span class="cursor"></span></p>
+                <p id="auth-status" style="margin-top:20px;"></p>
+            </div>
+        </div>
+        <div id="step3" class="hidden">
+            <h1 class="red">LOCATION_FIXED:</h1>
+            <h1 style="font-size: 8vw;">Kita, Akabane</h1>
+            <p style="font-size: 1.5vw; color: white;">SERVER LOG: DATA_SENT_TO_REMOTE_HOST</p>
+        </div>
     </div>
+    <div class="troll-tag">THIS IS A TROLL</div>
 
     <script>
-        // 背景エフェクト
-        const canvas = document.getElementById('effectCanvas');
+        // マトリックス背景
+        const canvas = document.getElementById('matrix');
         const ctx = canvas.getContext('2d');
-        canvas.height = window.innerHeight;
-        canvas.width = window.innerWidth;
-        const chars = "CHASISJD`@WJDS'sdf1jsiad293"; // 表示する文字
-        const fontSize = 16;
+        canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+        const matrixChars = "01".split("");
+        const fontSize = 14;
         const columns = canvas.width / fontSize;
-        const drops = Array(Math.floor(columns)).fill(1); // 各列の文字のy座標
-
-        function drawEffect() {
-            ctx.fillStyle = "rgba(0, 0, 0, 0.05)"; // 残像効果のための半透明な黒で塗りつぶす
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = "#0f0"; // 文字の色 (緑)
-            ctx.font = fontSize + "px monospace";
-
-            for (let i = 0; i < drops.length; i++) {
-                // ランダムな文字を選択
-                const text = chars[Math.floor(Math.random() * chars.length)];
-                // 文字を描画
-                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
-
-                // もし文字が画面の一番下に到達したら、新しい位置をリセットする
-                // ランダムにリセットすることで、雨のように見える
-                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
-                    drops[i] = 0;
-                }
-                // 次のフレームで文字を下へ移動させる
+        const drops = Array(Math.floor(columns)).fill(1);
+        function draw() {
+            ctx.fillStyle = "rgba(0, 0, 0, 0.05)"; ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "#0f0"; ctx.font = fontSize + "px monospace";
+            drops.forEach((y, i) => {
+                const text = matrixChars[Math.floor(Math.random() * matrixChars.length)];
+                ctx.fillText(text, i * fontSize, y * fontSize);
+                if (y * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
                 drops[i]++;
-            }
+            });
         }
-        // 一定間隔で描画関数を呼び出す
-        setInterval(drawEffect, 50);
+        setInterval(draw, 50);
+
+        // ロジック
+        const params = new URLSearchParams(window.location.search);
+        document.getElementById('user-name').innerText = params.get('name') || "Unknown";
+
+        setTimeout(() => {
+            document.getElementById('step1').classList.add('hidden');
+            document.getElementById('step2').classList.remove('hidden');
+            
+            // パスワードが勝手に打たれる演出
+            const passText = "••••••••••••";
+            let i = 0;
+            const type = setInterval(() => {
+                document.getElementById('fake-pass').innerText += passText[i];
+                i++;
+                if (i >= passText.length) {
+                    clearInterval(type);
+                    setTimeout(() => {
+                        document.getElementById('auth-status').innerText = "VERIFIED!";
+                        document.getElementById('auth-status').style.color = "cyan";
+                        setTimeout(() => {
+                            document.getElementById('step2').classList.add('hidden');
+                            document.getElementById('step3').classList.remove('hidden');
+                        }, 1000);
+                    }, 800);
+                }
+            }, 200); // 遅めのタイピング
+        }, 3000); // 最初の待ち時間
     </script>
 </body>
 </html>
