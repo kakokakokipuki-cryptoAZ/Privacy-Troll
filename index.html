@@ -1,36 +1,42 @@
-// パスワード認証後の「特定プロセス」のタイムライン
-setTimeout(() => {
-    const authStatus = document.getElementById('auth-status');
-    authStatus.innerText = "VERIFIED!";
-    authStatus.style.color = "cyan";
-
-    // --- ここから新しい特定ロード演出 ---
-    setTimeout(() => {
-        document.getElementById('step2').innerHTML = `
-            <div style="text-align:left; display:inline-block; font-size:1.5vw;">
-                <p id="line1">Detecting Location Data...</p>
-                <p id="line2" class="hidden">Completed!</p>
-                <p id="line3" class="hidden" style="color:yellow;">Checking blockers...</p>
-                <p id="line4" class="hidden" style="color:red;">Access Denied</p>
-                <p id="line5" class="hidden">Attempting bypass...</p>
-                <p id="line6" class="hidden" style="color:cyan;">Access Completed!</p>
-            </div>
-        `;
-
-        // 順次表示していく（この「待ち」が怖い）
-        const show = (id, delay) => setTimeout(() => document.getElementById(id).classList.remove('hidden'), delay);
-        
-        show('line2', 800);  // Completed!
-        show('line3', 1500); // Checking blockers...
-        show('line4', 2500); // Access Denied (一瞬絶望させる)
-        show('line5', 3200); // Attempting bypass...
-        show('line6', 4500); // Access Completed!
-
-        // 全て終わったら最終ステップ（住所表示）へ
-        setTimeout(() => {
-            document.getElementById('step2').classList.add('hidden');
-            document.getElementById('step3').classList.remove('hidden');
-        }, 5500);
-
-    }, 1000);
-}, 800);
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>System Alert</title>
+    <style>
+        body {
+            background-color: black;
+            color: red;
+            font-family: 'Courier New', monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+        .alert-box {
+            border: 2px solid red;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 0 20px red;
+        }
+        h1 {
+            font-size: 3em;
+            margin: 0;
+            animation: pulse 1s infinite;
+        }
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="alert-box">
+        <h1>SYSTEM ALERT</h1>
+        <p>This is a simulated critical system alert.</p>
+    </div>
+</body>
+</html>
