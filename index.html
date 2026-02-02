@@ -2,121 +2,77 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>TRACE_SESSION_LOG</title>
+    <title>TERMINAL_SIMULATION</title>
     <style>
         body { background: #000; color: #0f0; font-family: 'Courier New', monospace; margin: 0; overflow: hidden; }
-        canvas { position: fixed; top: 0; left: 0; opacity: 0.3; z-index: 0; }
-        .ui { position: relative; z-index: 10; padding: 5vw; text-align: center; }
-        .hidden { display: none; }
-        .critical { color: red; text-shadow: 0 0 15px red; font-weight: bold; }
-        
-        #log-area { text-align: left; display: inline-block; font-size: 1.5vw; background: rgba(0,0,0,0.8); padding: 20px; border: 1px solid #0f0; min-width: 500px; }
-        
-        /* 恐怖のロードバー */
-        .bar-container { width: 100%; border: 1px solid #0f0; height: 15px; margin-top: 15px; background: #002200; }
-        #bar { width: 0%; height: 100%; background: #0f0; }
-        
-        .troll-tag { position: fixed; bottom: 8px; right: 10px; color: #333; font-size: 12px; z-index: 100; }
+        canvas { position: fixed; top: 0; left: 0; z-index: 1; opacity: 0.3; }
+        .ui-layer { position: relative; z-index: 10; padding: 5vw; text-align: center; }
+        #console { text-align: left; display: inline-block; font-size: 1.6vw; background: rgba(0,0,0,0.8); padding: 25px; border: 1px solid #0f0; min-width: 550px; }
+        .troll-note { position: fixed; bottom: 8px; right: 10px; color: #222; font-size: 12px; z-index: 100; font-weight: bold; }
     </style>
 </head>
 <body>
     <canvas id="m"></canvas>
-    <div class="ui">
-        <div id="s1">
-            <p>[SYSTEM_INITIALIZING]</p>
-            <h1 id="un" style="font-size: 6vw;">ANALYZING...</h1>
-        </div>
-
-        <div id="s2" class="hidden">
-            <div id="log-area">
-                <p>LOGIN_KEY: <span id="pass"></span></p>
-                <p id="st"></p>
-                <div id="logs">
-                    <p id="l1" class="hidden">> Location_Data: <span id="l1-r"></span></p>
-                    <p id="l2" class="hidden">> Check_Blockers: <span id="l2-r" style="color:red;"></span></p>
-                    <p id="l3" class="hidden">> Status: <span id="l3-r"></span></p>
-                    <div id="l4" class="hidden" style="margin-top:20px;">
-                        <p>> FINAL_TRACE_STREAMING:</p>
-                        <div class="bar-container"><div id="bar"></div></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div id="s3" class="hidden">
-            <h1 class="critical" style="font-size: 4vw;">LOCATION_FIXED:</h1>
-            <h1 style="font-size: 8vw; margin:0; letter-spacing: -2px;">Kita, Akabane</h1>
-            <p style="color:white; font-size: 1.2vw; margin-top:20px;">[!] COORDINATES_SENT_TO_REMOTE_SERVER</p>
+    <div class="ui-layer">
+        <div id="console">
+            <p id="line1"></p>
+            <p id="line2"></p>
+            <p id="line3"></p>
+            <p id="line4"></p>
         </div>
     </div>
-    <div class="troll-tag">THIS IS A TROLL</div>
+    <div class="troll-note">THIS IS A TROLL / ジョークサイトです</div>
 
     <script>
-        // 背景の数字の雨
+        // 背景のマトリックス風エフェクト
         const c = document.getElementById('m'); const x = c.getContext('2d');
         c.width = window.innerWidth; c.height = window.innerHeight;
-        const drops = Array(Math.floor(c.width/15)).fill(1);
+        const matrix = "01".split("");
+        const drops = Array(Math.floor(c.width/16)).fill(1);
         function draw() {
             x.fillStyle = "rgba(0,0,0,0.08)"; x.fillRect(0,0,c.width,c.height);
-            x.fillStyle = "#0a0"; x.font = "15px monospace";
+            x.fillStyle = "#0f0"; x.font = "16px monospace";
             drops.forEach((y, i) => {
-                x.fillText(Math.floor(Math.random()*2), i*15, y*15);
-                if (y*15 > c.height && Math.random() > 0.98) drops[i] = 0;
+                const txt = matrix[Math.floor(Math.random()*matrix.length)];
+                x.fillText(txt, i*16, y*16);
+                if (y*16 > c.height && Math.random() > 0.98) drops[i] = 0;
                 drops[i]++;
             });
         }
         setInterval(draw, 50);
 
-        // トロール演出ロジック
-        const name = new URLSearchParams(window.location.search).get('name') || "Target_User";
-        document.getElementById('un').innerText = name;
+        // コンソール風テキスト表示
+        const lines = [
+            "INITIALIZING_SYSTEM...",
+            "LOADING_MODULES...",
+            "SIMULATING_ACCESS...",
+            "OPERATION_COMPLETE."
+        ];
+        const lineElements = [
+            document.getElementById('line1'),
+            document.getElementById('line2'),
+            document.getElementById('line3'),
+            document.getElementById('line4')
+        ];
 
-        setTimeout(() => {
-            document.getElementById('s1').classList.add('hidden');
-            document.getElementById('s2').classList.remove('hidden');
-            
-            // パスワード入力演出
-            let i = 0; const pt = "************";
-            const typing = setInterval(() => {
-                document.getElementById('pass').innerText += pt[i++];
-                if (i >= pt.length) {
-                    clearInterval(typing);
-                    setTimeout(() => {
-                        const st = document.getElementById('st');
-                        st.innerText = "ACCESS_GRANTED"; st.style.color = "cyan";
-                        
-                        const show = (id, resId, text, delay) => {
-                            setTimeout(() => {
-                                document.getElementById(id).classList.remove('hidden');
-                                if(resId) setTimeout(() => document.getElementById(resId).innerText = text, 600);
-                            }, delay);
-                        };
+        let lineIndex = 0;
+        let charIndex = 0;
 
-                        show('l1', 'l1-r', 'Detected', 800);
-                        show('l2', 'l2-r', 'Access Denied', 2200); 
-                        show('l3', 'l3-r', 'Bypassing...', 3800); 
-
-                        // 最終ロードバーの演出
-                        setTimeout(() => {
-                            document.getElementById('l4').classList.remove('hidden');
-                            let w = 0;
-                            const b = document.getElementById('bar');
-                            const iv = setInterval(() => {
-                                w += Math.random() * 4;
-                                if (w >= 100) {
-                                    w = 100; clearInterval(iv);
-                                    setTimeout(() => {
-                                        document.getElementById('s2').classList.add('hidden');
-                                        document.getElementById('s3').classList.remove('hidden');
-                                    }, 800);
-                                }
-                                b.style.width = w + "%";
-                            }, 60);
-                        }, 5000);
-                    }, 800);
+        function typeLine() {
+            if (lineIndex < lines.length) {
+                if (charIndex < lines[lineIndex].length) {
+                    lineElements[lineIndex].textContent += lines[lineIndex][charIndex];
+                    charIndex++;
+                    setTimeout(typeLine, 50); // タイピング速度調整
+                } else {
+                    lineIndex++;
+                    charIndex = 0;
+                    setTimeout(typeLine, 1000); // 次の行までの待機時間
                 }
-            }, 180);
-        }, 2000);
+            }
+        }
+
+        setTimeout(typeLine, 1000); // 開始までの待機時間
     </script>
 </body>
 </html>
