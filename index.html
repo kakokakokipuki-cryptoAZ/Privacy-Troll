@@ -2,58 +2,68 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>SYSTEM_FAILURE_DETECTION</title>
+    <title>CRITICAL_SECURITY_ALERT</title>
     <style>
-        body { background: black; color: #0f0; font-family: 'Courier New', Courier, monospace; padding: 50px; overflow: hidden; }
+        body { background: black; color: #0f0; font-family: 'Courier New', monospace; padding: 5vw; overflow: hidden; }
         .hidden { display: none; }
-        #loading { font-size: 1.5em; }
-        .troll-tag { position: fixed; bottom: 10px; right: 10px; color: #333; font-size: 12px; }
+        
+        /* 名前と住所を巨大化 */
+        #user-name, #location-text { font-size: 8vw; color: red; text-shadow: 0 0 20px red; margin: 0; }
+        #loading { font-size: 3vw; color: #0f0; }
+
+        /* 「THIS IS A TROLL」を極小に */
+        .troll-tag { 
+            position: fixed; 
+            bottom: 5px; 
+            right: 5px; 
+            color: #1a1a1a; /* 背景に馴染むくらいの暗い色 */
+            font-size: 8px; /* 豆粒サイズ */
+            text-decoration: none;
+        }
     </style>
 </head>
 <body>
 
     <div id="step1">
-        <p>IDENTIFYING TARGET...</p>
-        <h1 id="user-name">Unknown</h1>
+        <p style="font-size: 2vw;">TARGET_USER_FOUND:</p>
+        <h1 id="user-name">Scanning...</h1>
     </div>
 
     <div id="step2" class="hidden">
-        <p id="loading">UPDATING DATABASE [..........] 0%</p>
+        <p id="loading">DECRYPTING_PRIVATE_DATA... [..........] 0%</p>
     </div>
 
     <div id="step3" class="hidden">
-        <h2 style="color: red;">LOCATION DETECTED:</h2>
-        <h1 style="font-size: 3em;">Kita, Akabane</h1>
-        <p>IP Address: 192.168.1.XXX (Mock)</p>
+        <p style="font-size: 2vw; color: red;">LOCATION_FIXED:</p>
+        <h1 id="location-text">Kita, Akabane</h1>
+        <p style="font-size: 1.5vw;">ACCESS_POINT: REMOTE_SERVER_NODE_09</p>
     </div>
 
+    <!-- 極小のネタばらし -->
     <div class="troll-tag">THIS IS A TROLL</div>
 
     <script>
         const params = new URLSearchParams(window.location.search);
-        const name = params.get('name') || "Target User";
+        const name = params.get('name') || "Target";
         document.getElementById('user-name').innerText = name;
 
-        // 演出のタイムライン
         setTimeout(() => {
             document.getElementById('step1').classList.add('hidden');
             document.getElementById('step2').classList.remove('hidden');
             
-            // ロード画面のアニメーション
             let progress = 0;
             const loader = setInterval(() => {
-                progress += 20;
-                document.getElementById('loading').innerText = `UPDATING DATABASE [${'#'.repeat(progress/10)}${'.'.repeat(10-progress/10)}] ${progress}%`;
+                progress += 10;
+                document.getElementById('loading').innerText = `DECRYPTING... [${'#'.repeat(progress/10)}${'.'.repeat(10-progress/10)}] ${progress}%`;
                 if (progress >= 100) {
                     clearInterval(loader);
-                    // 最終ステップ
                     setTimeout(() => {
                         document.getElementById('step2').classList.add('hidden');
                         document.getElementById('step3').classList.remove('hidden');
                     }, 500);
                 }
-            }, 400);
-        }, 2000);
+            }, 300);
+        }, 1500);
     </script>
 </body>
 </html>
