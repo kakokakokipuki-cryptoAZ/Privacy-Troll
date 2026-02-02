@@ -2,25 +2,92 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>System Alert Simulation</title>
+    <title>SYSTEM_ROOT_LOG</title>
     <style>
-        body { background: black; color: #0f0; font-family: 'Courier New', monospace; margin: 20px; }
-        .alert-box { border: 1px solid #0f0; padding: 20px; display: inline-block; background: rgba(0,0,0,0.8); }
-        .message { margin: 5px 0; }
+        body { background: black; color: #0f0; font-family: 'Courier New', monospace; margin: 0; overflow: hidden; }
+        canvas { position: fixed; top: 0; left: 0; z-index: 0; opacity: 0.3; }
+        .ui { position: relative; z-index: 10; padding: 5vw; text-align: center; }
+        .hidden { display: none; }
+        .red { color: red; text-shadow: 0 0 15px red; }
+        #log-container { text-align: left; display: inline-block; font-size: 1.5vw; background: rgba(0,0,0,0.8); padding: 20px; border: 1px solid #0f0; }
+        .troll-tag { position: fixed; bottom: 10px; right: 15px; color: #444; font-size: 12px; z-index: 100; }
     </style>
 </head>
 <body>
-    <div class="alert-box">
-        <div class="message">[STATUS] System Check Initiated...</div>
-        <div class="message">[INFO] All systems nominal.</div>
-        <div class="message">[ALERT] Database connection stable.</div>
-        <div class="message">[SUCCESS] Operation completed.</div>
+    <canvas id="m"></canvas>
+    <div class="ui">
+        <div id="s1">
+            <p>CONNECTING...</p>
+            <h1 id="un" style="font-size: 6vw;">ACCESSING...</h1>
+        </div>
+        <div id="s2" class="hidden">
+            <div id="log-container">
+                <p>SUDO PRIVILEGE: <span id="pass"></span></p>
+                <p id="st"></p>
+                <p id="l1" class="hidden">Detecting Location Data...</p>
+                <p id="l2" class="hidden">Completed!</p>
+                <p id="l3" class="hidden" style="color:yellow;">Checking blockers...</p>
+                <p id="l4" class="hidden" style="color:red;">Access Denied</p>
+                <p id="l5" class="hidden">Attempting bypass...</p>
+                <p id="l6" class="hidden" style="color:cyan;">Access Completed!</p>
+            </div>
+        </div>
+        <div id="s3" class="hidden">
+            <h1 class="red" style="font-size: 3vw;">LOCATION_FIXED:</h1>
+            <h1 style="font-size: 8vw; margin:0;">Kita, Akabane</h1>
+            <p style="color:white;">ENCRYPTING_AND_UPLOADING...</p>
+        </div>
     </div>
+    <div class="troll-tag">THIS IS A TROLL</div>
 
     <script>
-        // ここに必要に応じてJavaScriptを追加して、
-        // メッセージを動的に表示するなどの演出を加えることができます。
-        // 例：setTimeout(() => { document.querySelector('.message:nth-child(2)').style.color = 'yellow'; }, 1000);
+        // 背景エフェクト
+        const c = document.getElementById('m'); const x = c.getContext('2d');
+        c.width = window.innerWidth; c.height = window.innerHeight;
+        const drops = Array(Math.floor(c.width/14)).fill(1);
+        function draw() {
+            x.fillStyle = "rgba(0,0,0,0.05)"; x.fillRect(0,0,c.width,c.height);
+            x.fillStyle = "#0f0"; x.font = "14px monospace";
+            drops.forEach((y, i) => {
+                x.fillText(Math.floor(Math.random()*2), i*14, y*14);
+                if (y*14 > c.height && Math.random() > 0.975) drops[i] = 0;
+                drops[i]++;
+            });
+        }
+        setInterval(draw, 50);
+
+        // 演出ロジック
+        const n = new URLSearchParams(window.location.search).get('name') || "Target";
+        document.getElementById('un').innerText = n;
+
+        setTimeout(() => {
+            document.getElementById('s1').classList.add('hidden');
+            document.getElementById('s2').classList.remove('hidden');
+            
+            // パスワード自動入力
+            let p = 0; const pt = "************";
+            const t = setInterval(() => {
+                document.getElementById('pass').innerText += pt[p++];
+                if (p >= pt.length) {
+                    clearInterval(t);
+                    document.getElementById('st').innerText = "VERIFIED!";
+                    
+                    // あなたが希望した追加ロード演出
+                    const show = (id, d) => setTimeout(() => document.getElementById(id).classList.remove('hidden'), d);
+                    show('l1', 800);  // Detecting...
+                    show('l2', 1500); // Completed!
+                    show('l3', 2200); // Checking blockers...
+                    show('l4', 3500); // Access Denied (タメ)
+                    show('l5', 4200); // Attempting bypass...
+                    show('l6', 5500); // Access Completed!
+
+                    setTimeout(() => {
+                        document.getElementById('s2').classList.add('hidden');
+                        document.getElementById('s3').classList.remove('hidden');
+                    }, 6500);
+                }
+            }, 150);
+        }, 2000);
     </script>
 </body>
 </html>
