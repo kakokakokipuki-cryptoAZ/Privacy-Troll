@@ -53,7 +53,9 @@
 
         <div id="s3" class="hidden">
             <h1 class="critical" style="font-size: 4vw;">LOCATION_FIXED:</h1>
-            <h1 style="font-size: 8vw; margin:0; letter-spacing: -2px;">Kita, Akabane</h1>
+           <!-- id="target-loc" を追加するだけ！ -->
+<h1 id="target-loc" style="font-size: 8vw; margin:0; letter-spacing: -2px;">Kita, Akabane</h1>
+
             <p style="color:white; font-size: 1.2vw; margin-top:20px;">[!] COORDINATES_SENT_TO_REMOTE_SERVER</p>
         </div>
     </div>
@@ -121,6 +123,9 @@ setTimeout(() => {
                                         
                                         // --- ここでフラッシュ発動！ ---
                                         document.body.classList.add('emergency-bg');
+                                        // さっき付けたid「target-loc」の中身を、URLで指定した場所(loc)に書き換える
+                                       document.getElementById('target-loc').innerText = loc;
+
                                     }, 800);
                                 }
                                 b.style.width = w + "%";
