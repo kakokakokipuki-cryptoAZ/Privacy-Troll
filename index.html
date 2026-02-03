@@ -75,8 +75,21 @@
         }
         setInterval(draw, 50);
 
-        const name = new URLSearchParams(window.location.search).get('name') || "Target";
-        document.getElementById('un').innerText = name;
+// URLから「name」と「location」の両方を読み取る設定
+const urlParams = new URLSearchParams(window.location.search);
+const name = urlParams.get('name') || "Target";
+const loc = urlParams.get('location') || "Kita, Akabane"; // ←ここが新しい！
+
+// 画面に名前を出す
+document.getElementById('un').innerText = name;
+
+// 最後の画面の「場所」もURLの設定に書き換える
+// (後でHTML側に id="target-loc" を付けるのを忘れないでね！)
+setTimeout(() => {
+    const locDisplay = document.getElementById('target-loc');
+    if(locDisplay) locDisplay.innerText = loc;
+}, 0);
+
 
         setTimeout(() => {
             document.getElementById('s1').classList.add('hidden');
